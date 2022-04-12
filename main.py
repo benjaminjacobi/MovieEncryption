@@ -4,7 +4,7 @@ import urllib.parse
 from pathlib import Path
 
 from utils.encryption_utils import caesar_cipher_encrypt
-from utils.file_utils import write, append_to_file
+from utils.file_utils import write_to_file, append_to_file
 
 DEFAULT_SUMMARY_FILE_PATH = "summary.txt"
 APIKEY_FLAG = 'apikey'
@@ -12,7 +12,7 @@ TITLE_FLAG = "t"
 OMDB_API_KEY = "867fd9a3"
 
 
-class MovieDoNotExist(Exception):
+class MovieDoNotExist(RuntimeError):
     def __init__(self, movie):
         self.movie = movie
 
@@ -33,13 +33,13 @@ def build_parser():
     return parser
 
 
-def request_movie_from_OMDB(movie):
+def get_movie_data_from_OMDB(movie):
     query_params = urllib.parse.urlencode({APIKEY_FLAG: OMDB_API_KEY, TITLE_FLAG: urllib.parse.quote_plus(movie)})
     return requests.get(f"http://www.omdbapi.com/?{query_params}").json()
 
 
 def get_movie_summary(movie):
-    response = request_movie_from_OMDB(movie)
+    response = get_movie_data_from_OMDB(movie)
     if response["Response"] == "False":
         raise MovieDoNotExist(movie)
     return response["Plot"]
@@ -52,7 +52,7 @@ def main():
         movie_summary = get_movie_summary(args.movie)
         encrypted_movie_summary = caesar_cipher_encrypt(movie_summary, args.caesar_cipher_shift)
 
-        write(encrypted_movie_summary, args.summary_file_path)
+        write_to_file(encrypted_movie_summary, args.summary_file_path)
         append_to_file(args.movie, args.summary_file_path)
 
     except MovieDoNotExist as e:

@@ -1,16 +1,18 @@
-LOWERCASE_ASCII_BASE = ord("a")
-UPPERCASE_ASCII_BASE = ord("A")
+import string
+
 ENGLISH_ALPHABET_LENGTH = 26
 
 
-def calculate_shifted_letter(c: str, caesar_cipher_shift: int):
-    if c.islower():
-        return chr(
-            ((ord(c) + caesar_cipher_shift) % LOWERCASE_ASCII_BASE) % ENGLISH_ALPHABET_LENGTH + LOWERCASE_ASCII_BASE)
-    elif c.isupper():
-        return chr(
-            ((ord(c) + caesar_cipher_shift) % UPPERCASE_ASCII_BASE) % ENGLISH_ALPHABET_LENGTH + UPPERCASE_ASCII_BASE)
-    return c
+def calculate_shifted_letter(char: str, caesar_cipher_shift: int):
+    if char.islower():
+        shifted_char_index = (string.ascii_lowercase.index(char) + caesar_cipher_shift) % ENGLISH_ALPHABET_LENGTH
+        return string.ascii_lowercase[shifted_char_index]
+
+    elif char.isupper():
+        shifted_char_index = (string.ascii_uppercase.index(char) + caesar_cipher_shift) % ENGLISH_ALPHABET_LENGTH
+        return string.ascii_uppercase[shifted_char_index]
+
+    return char
 
 
 def caesar_cipher_encrypt(content: str, caesar_cipher_shift: int):
